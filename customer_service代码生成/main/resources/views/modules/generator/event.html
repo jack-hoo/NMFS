@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>直播活动表</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<a v-if="hasPermission('event:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('event:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('event:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">机构id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.orgId" placeholder="机构id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">活动主播id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.hostId" placeholder="活动主播id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">活动标题</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventTitle" placeholder="活动标题"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播类别id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventTypeId" placeholder="直播类别id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">活动预计开始时间：主要用来配合生成推流过期时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventStartTime" placeholder="活动预计开始时间：主要用来配合生成推流过期时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播结束时间，由阿里回调设置</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventEndTime" placeholder="直播结束时间，由阿里回调设置"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">融云聊天室</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventDesc" placeholder="融云聊天室"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间观看人数：通过查询直播间拉流人数+点播观看人数+自定义</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.eventVisitedNum" placeholder="直播间观看人数：通过查询直播间拉流人数+点播观看人数+自定义"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">融云聊天室id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.chatRoomId" placeholder="融云聊天室id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播海报封面</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.roomPoster" placeholder="直播海报封面"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间状态：0-未开始1-直播中2-结束</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.liveStatus" placeholder="直播间状态：0-未开始1-直播中2-结束"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间推流地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.pushUrl" placeholder="直播间推流地址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间拉流rtmp地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.liveRtmp" placeholder="直播间拉流rtmp地址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间拉流hls地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.liveHls" placeholder="直播间拉流hls地址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">直播间拉流hlv地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.liveFlv" placeholder="直播间拉流hlv地址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">录像回看地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.replayUrl" placeholder="录像回看地址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">记录创建时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="event.createTime" placeholder="记录创建时间"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../../js/modules/generator/event.js"></script>
+</body>
+</html>

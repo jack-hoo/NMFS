@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.EventDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.EventEntity" id="eventMap">
+        <result property="eventId" column="event_id"/>
+        <result property="orgId" column="org_id"/>
+        <result property="hostId" column="host_id"/>
+        <result property="eventTitle" column="event_title"/>
+        <result property="eventTypeId" column="event_type_id"/>
+        <result property="eventStartTime" column="event_start_time"/>
+        <result property="eventEndTime" column="event_end_time"/>
+        <result property="eventDesc" column="event_desc"/>
+        <result property="eventVisitedNum" column="event_visited_num"/>
+        <result property="chatRoomId" column="chat_room_id"/>
+        <result property="roomPoster" column="room_poster"/>
+        <result property="liveStatus" column="live_status"/>
+        <result property="pushUrl" column="push_url"/>
+        <result property="liveRtmp" column="live_rtmp"/>
+        <result property="liveHls" column="live_hls"/>
+        <result property="liveFlv" column="live_flv"/>
+        <result property="replayUrl" column="replay_url"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.EventEntity">
+		select * from event where event_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.EventEntity">
+		select * from event
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by event_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from event 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.EventEntity" useGeneratedKeys="true" keyProperty="eventId">
+		insert into event
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="hostId != null">`host_id` = #{hostId}, </if>
+			<if test="eventTitle != null">`event_title` = #{eventTitle}, </if>
+			<if test="eventTypeId != null">`event_type_id` = #{eventTypeId}, </if>
+			<if test="eventStartTime != null">`event_start_time` = #{eventStartTime}, </if>
+			<if test="eventEndTime != null">`event_end_time` = #{eventEndTime}, </if>
+			<if test="eventDesc != null">`event_desc` = #{eventDesc}, </if>
+			<if test="eventVisitedNum != null">`event_visited_num` = #{eventVisitedNum}, </if>
+			<if test="chatRoomId != null">`chat_room_id` = #{chatRoomId}, </if>
+			<if test="roomPoster != null">`room_poster` = #{roomPoster}, </if>
+			<if test="liveStatus != null">`live_status` = #{liveStatus}, </if>
+			<if test="pushUrl != null">`push_url` = #{pushUrl}, </if>
+			<if test="liveRtmp != null">`live_rtmp` = #{liveRtmp}, </if>
+			<if test="liveHls != null">`live_hls` = #{liveHls}, </if>
+			<if test="liveFlv != null">`live_flv` = #{liveFlv}, </if>
+			<if test="replayUrl != null">`replay_url` = #{replayUrl}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.EventEntity">
+		update event 
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="hostId != null">`host_id` = #{hostId}, </if>
+			<if test="eventTitle != null">`event_title` = #{eventTitle}, </if>
+			<if test="eventTypeId != null">`event_type_id` = #{eventTypeId}, </if>
+			<if test="eventStartTime != null">`event_start_time` = #{eventStartTime}, </if>
+			<if test="eventEndTime != null">`event_end_time` = #{eventEndTime}, </if>
+			<if test="eventDesc != null">`event_desc` = #{eventDesc}, </if>
+			<if test="eventVisitedNum != null">`event_visited_num` = #{eventVisitedNum}, </if>
+			<if test="chatRoomId != null">`chat_room_id` = #{chatRoomId}, </if>
+			<if test="roomPoster != null">`room_poster` = #{roomPoster}, </if>
+			<if test="liveStatus != null">`live_status` = #{liveStatus}, </if>
+			<if test="pushUrl != null">`push_url` = #{pushUrl}, </if>
+			<if test="liveRtmp != null">`live_rtmp` = #{liveRtmp}, </if>
+			<if test="liveHls != null">`live_hls` = #{liveHls}, </if>
+			<if test="liveFlv != null">`live_flv` = #{liveFlv}, </if>
+			<if test="replayUrl != null">`replay_url` = #{replayUrl}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where event_id = #{eventId}
+	</update>
+	
+	<delete id="delete">
+		delete from event where event_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from event where event_id in 
+		<foreach item="eventId" collection="array" open="(" separator="," close=")">
+			#{eventId}
+		</foreach>
+	</delete>
+
+</mapper>

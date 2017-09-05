@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.CustomerAccountDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.CustomerAccountEntity" id="customerAccountMap">
+        <result property="cAccountId" column="c_account_id"/>
+        <result property="dataFlowTotal" column="data_flow_total"/>
+        <result property="customerId" column="customer_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.CustomerAccountEntity">
+		select * from customer_account where c_account_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.CustomerAccountEntity">
+		select * from customer_account
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by c_account_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from customer_account 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.CustomerAccountEntity" useGeneratedKeys="true" keyProperty="cAccountId">
+		insert into customer_account
+		<set>
+			<if test="dataFlowTotal != null">`data_flow_total` = #{dataFlowTotal}, </if>
+			<if test="customerId != null">`customer_id` = #{customerId}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.CustomerAccountEntity">
+		update customer_account 
+		<set>
+			<if test="dataFlowTotal != null">`data_flow_total` = #{dataFlowTotal}, </if>
+			<if test="customerId != null">`customer_id` = #{customerId}</if>
+		</set>
+		where c_account_id = #{cAccountId}
+	</update>
+	
+	<delete id="delete">
+		delete from customer_account where c_account_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from customer_account where c_account_id in 
+		<foreach item="cAccountId" collection="array" open="(" separator="," close=")">
+			#{cAccountId}
+		</foreach>
+	</delete>
+
+</mapper>

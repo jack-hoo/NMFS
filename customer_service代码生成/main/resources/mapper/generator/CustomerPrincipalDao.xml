@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.CustomerPrincipalDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.CustomerPrincipalEntity" id="customerPrincipalMap">
+        <result property="cId" column="c_id"/>
+        <result property="orgId" column="org_id"/>
+        <result property="isParent" column="is_parent"/>
+        <result property="cAccount" column="c_account"/>
+        <result property="cPassword" column="c_password"/>
+        <result property="state" column="state"/>
+        <result property="lastPasswordResetDate" column="last_password_reset_date"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.CustomerPrincipalEntity">
+		select * from customer_principal where c_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.CustomerPrincipalEntity">
+		select * from customer_principal
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by c_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from customer_principal 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.CustomerPrincipalEntity" useGeneratedKeys="true" keyProperty="cId">
+		insert into customer_principal
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="isParent != null">`is_parent` = #{isParent}, </if>
+			<if test="cAccount != null">`c_account` = #{cAccount}, </if>
+			<if test="cPassword != null">`c_password` = #{cPassword}, </if>
+			<if test="state != null">`state` = #{state}, </if>
+			<if test="lastPasswordResetDate != null">`last_password_reset_date` = #{lastPasswordResetDate}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.CustomerPrincipalEntity">
+		update customer_principal 
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="isParent != null">`is_parent` = #{isParent}, </if>
+			<if test="cAccount != null">`c_account` = #{cAccount}, </if>
+			<if test="cPassword != null">`c_password` = #{cPassword}, </if>
+			<if test="state != null">`state` = #{state}, </if>
+			<if test="lastPasswordResetDate != null">`last_password_reset_date` = #{lastPasswordResetDate}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where c_id = #{cId}
+	</update>
+	
+	<delete id="delete">
+		delete from customer_principal where c_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from customer_principal where c_id in 
+		<foreach item="cId" collection="array" open="(" separator="," close=")">
+			#{cId}
+		</foreach>
+	</delete>
+
+</mapper>

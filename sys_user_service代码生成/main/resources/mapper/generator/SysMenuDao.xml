@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.SysMenuDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.SysMenuEntity" id="sysMenuMap">
+        <result property="menuId" column="menu_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="path" column="path"/>
+        <result property="hidden" column="hidden"/>
+        <result property="noDropdown" column="no_dropdown"/>
+        <result property="component" column="component"/>
+        <result property="type" column="type"/>
+        <result property="icon" column="icon"/>
+        <result property="orderNum" column="order_num"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.SysMenuEntity">
+		select * from sys_menu where menu_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.SysMenuEntity">
+		select * from sys_menu
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by menu_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_menu 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.SysMenuEntity" useGeneratedKeys="true" keyProperty="menuId">
+		insert into sys_menu
+		<set>
+			<if test="parentId != null">`parent_id` = #{parentId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="path != null">`path` = #{path}, </if>
+			<if test="hidden != null">`hidden` = #{hidden}, </if>
+			<if test="noDropdown != null">`no_dropdown` = #{noDropdown}, </if>
+			<if test="component != null">`component` = #{component}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="icon != null">`icon` = #{icon}, </if>
+			<if test="orderNum != null">`order_num` = #{orderNum}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.SysMenuEntity">
+		update sys_menu 
+		<set>
+			<if test="parentId != null">`parent_id` = #{parentId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="path != null">`path` = #{path}, </if>
+			<if test="hidden != null">`hidden` = #{hidden}, </if>
+			<if test="noDropdown != null">`no_dropdown` = #{noDropdown}, </if>
+			<if test="component != null">`component` = #{component}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="icon != null">`icon` = #{icon}, </if>
+			<if test="orderNum != null">`order_num` = #{orderNum}</if>
+		</set>
+		where menu_id = #{menuId}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_menu where menu_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_menu where menu_id in 
+		<foreach item="menuId" collection="array" open="(" separator="," close=")">
+			#{menuId}
+		</foreach>
+	</delete>
+
+</mapper>

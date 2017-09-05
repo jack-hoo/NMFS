@@ -1,0 +1,33 @@
+package com.miner.service;
+
+import com.miner.entity.SysPermissionEntity;
+import com.miner.entity.SysPermissionRoleEntity;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 系统角色权限对应表
+ * 
+ * @author hushangjie
+ * @email 979783618@qq.com
+ * @date 2017-08-24 17:56:49
+ */
+public interface SysPermissionRoleService {
+	
+	SysPermissionRoleEntity queryObject(Integer id);
+	
+	List<SysPermissionRoleEntity> queryList(Map<String, Object> map);
+	
+	int queryTotal(Map<String, Object> map);
+	
+	void save(SysPermissionRoleEntity sysPermissionRole);
+	
+	void update(SysPermissionRoleEntity sysPermissionRole);
+	
+	void delete(Integer id);
+	
+	void deleteBatch(Integer[] ids);
+
+	List<SysPermissionEntity> queryPermsByRoleIdAndUrl(Integer roleId ,String url);
+}

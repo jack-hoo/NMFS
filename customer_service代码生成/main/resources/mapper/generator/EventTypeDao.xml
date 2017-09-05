@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.EventTypeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.EventTypeEntity" id="eventTypeMap">
+        <result property="eventTypeId" column="event_type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="typeDesc" column="type_desc"/>
+        <result property="orgId" column="org_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.EventTypeEntity">
+		select * from event_type where event_type_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.EventTypeEntity">
+		select * from event_type
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by event_type_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from event_type 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.EventTypeEntity" useGeneratedKeys="true" keyProperty="eventTypeId">
+		insert into event_type
+		<set>
+			<if test="typeName != null">`type_name` = #{typeName}, </if>
+			<if test="typeDesc != null">`type_desc` = #{typeDesc}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.EventTypeEntity">
+		update event_type 
+		<set>
+			<if test="typeName != null">`type_name` = #{typeName}, </if>
+			<if test="typeDesc != null">`type_desc` = #{typeDesc}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}</if>
+		</set>
+		where event_type_id = #{eventTypeId}
+	</update>
+	
+	<delete id="delete">
+		delete from event_type where event_type_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from event_type where event_type_id in 
+		<foreach item="eventTypeId" collection="array" open="(" separator="," close=")">
+			#{eventTypeId}
+		</foreach>
+	</delete>
+
+</mapper>

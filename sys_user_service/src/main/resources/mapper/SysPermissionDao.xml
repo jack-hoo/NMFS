@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.SysPermissionDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.SysPermissionEntity" id="sysPermissionMap">
+        <result property="permId" column="perm_id"/>
+        <result property="urlPrefix" column="url_prefix"/>
+        <result property="permName" column="perm_name"/>
+        <result property="permDesc" column="perm_desc"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.SysPermissionEntity">
+		select * from sys_permission where perm_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.SysPermissionEntity">
+		select * from sys_permission
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by perm_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_permission 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.SysPermissionEntity" useGeneratedKeys="true" keyProperty="permId">
+		insert into sys_permission
+		<set>
+			<if test="urlPrefix != null">`url_prefix` = #{urlPrefix}, </if>
+			<if test="permName != null">`perm_name` = #{permName}, </if>
+			<if test="permDesc != null">`perm_desc` = #{permDesc}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.SysPermissionEntity">
+		update sys_permission 
+		<set>
+			<if test="urlPrefix != null">`url_prefix` = #{urlPrefix}, </if>
+			<if test="permName != null">`perm_name` = #{permName}, </if>
+			<if test="permDesc != null">`perm_desc` = #{permDesc}</if>
+		</set>
+		where perm_id = #{permId}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_permission where perm_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_permission where perm_id in 
+		<foreach item="permId" collection="array" open="(" separator="," close=")">
+			#{permId}
+		</foreach>
+	</delete>
+
+</mapper>

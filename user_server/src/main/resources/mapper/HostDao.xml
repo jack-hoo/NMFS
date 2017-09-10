@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.HostDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.HostEntity" id="hostMap">
+        <result property="hostId" column="host_id"/>
+        <result property="orgId" column="org_id"/>
+        <result property="cId" column="c_id"/>
+        <result property="hostName" column="host_name"/>
+        <result property="hostQq" column="host_qq"/>
+        <result property="hostSex" column="host_sex"/>
+        <result property="hostEmail" column="host_email"/>
+        <result property="hostPhone" column="host_phone"/>
+        <result property="hostAvatar" column="host_avatar"/>
+        <result property="department" column="department"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.HostEntity">
+		select * from host where host_id = #{value}
+	</select>
+    <select id="queryByCId" resultType="com.miner.entity.HostEntity">
+        select * from host where c_id = #{value}
+    </select>
+
+	<select id="queryList" resultType="com.miner.entity.HostEntity">
+		select * from host
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${order} ${sidx}
+            </when>
+			<otherwise>
+                order by host_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from host 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.HostEntity" useGeneratedKeys="true" keyProperty="hostId">
+		insert into host
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="cId != null">`c_id` = #{cId}, </if>
+			<if test="hostName != null">`host_name` = #{hostName}, </if>
+			<if test="hostQq != null">`host_qq` = #{hostQq}, </if>
+			<if test="hostSex != null">`host_sex` = #{hostSex}, </if>
+			<if test="hostEmail != null">`host_email` = #{hostEmail}, </if>
+			<if test="hostPhone != null">`host_phone` = #{hostPhone}, </if>
+			<if test="hostAvatar != null">`host_avatar` = #{hostAvatar}, </if>
+			<if test="department != null">`department` = #{department}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.HostEntity">
+		update host 
+		<set>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="cId != null">`c_id` = #{cId}, </if>
+			<if test="hostName != null">`host_name` = #{hostName}, </if>
+			<if test="hostQq != null">`host_qq` = #{hostQq}, </if>
+			<if test="hostSex != null">`host_sex` = #{hostSex}, </if>
+			<if test="hostEmail != null">`host_email` = #{hostEmail}, </if>
+			<if test="hostPhone != null">`host_phone` = #{hostPhone}, </if>
+			<if test="hostAvatar != null">`host_avatar` = #{hostAvatar}, </if>
+			<if test="department != null">`department` = #{department}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where host_id = #{hostId}
+	</update>
+	
+	<delete id="delete">
+		delete from host where host_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from host where host_id in 
+		<foreach item="hostId" collection="array" open="(" separator="," close=")">
+			#{hostId}
+		</foreach>
+	</delete>
+
+</mapper>

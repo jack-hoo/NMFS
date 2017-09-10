@@ -57,10 +57,10 @@ jwt:
       register: "auth/register"
 
 #Eureka配置注册中心
-eureka:
-  client:
-    service-url:
-      default-zone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
+#eureka:
+#  client:
+ #   service-url:
+  #    default-zone: http://localhost:8761/eureka/
+  #instance:
+   # prefer-ip-address: true
 #spring security控制

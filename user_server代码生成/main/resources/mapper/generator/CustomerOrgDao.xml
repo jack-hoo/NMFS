@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.CustomerOrgDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.CustomerOrgEntity" id="customerOrgMap">
+        <result property="customerOrgId" column="customer_org_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="orgId" column="org_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.CustomerOrgEntity">
+		select * from customer_org where customer_org_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.CustomerOrgEntity">
+		select * from customer_org
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${order} ${sidx}
+            </when>
+			<otherwise>
+                order by customer_org_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from customer_org 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.CustomerOrgEntity">
+		insert into customer_org
+		<set>
+			<if test="customerId != null">`customer_id` = #{customerId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.CustomerOrgEntity">
+		update customer_org 
+		<set>
+			<if test="customerId != null">`customer_id` = #{customerId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}</if>
+		</set>
+		where customer_org_id = #{customerOrgId}
+	</update>
+	
+	<delete id="delete">
+		delete from customer_org where customer_org_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from customer_org where customer_org_id in 
+		<foreach item="customerOrgId" collection="array" open="(" separator="," close=")">
+			#{customerOrgId}
+		</foreach>
+	</delete>
+
+</mapper>

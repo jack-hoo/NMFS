@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import java.util.List;
 
 @SpringBootApplication
-@EnableEurekaClient
+/*@EnableEurekaClient*/
 public class SysUserServiceApplication extends WebMvcConfigurationSupport {
 
 	public static void main(String[] args) {

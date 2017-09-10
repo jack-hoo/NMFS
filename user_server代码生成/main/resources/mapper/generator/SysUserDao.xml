@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.SysUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.SysUserEntity" id="sysUserMap">
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="enable" column="enable"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastPasswordResetDate" column="last_password_reset_date"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.SysUserEntity">
+		select * from sys_user where user_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.SysUserEntity">
+		select * from sys_user
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${order} ${sidx}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_user 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.SysUserEntity" useGeneratedKeys="true" keyProperty="userId">
+		insert into sys_user
+		<set>
+			<if test="username != null">`username` = #{username}, </if>
+			<if test="password != null">`password` = #{password}, </if>
+			<if test="enable != null">`enable` = #{enable}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="lastPasswordResetDate != null">`last_password_reset_date` = #{lastPasswordResetDate}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.SysUserEntity">
+		update sys_user 
+		<set>
+			<if test="username != null">`username` = #{username}, </if>
+			<if test="password != null">`password` = #{password}, </if>
+			<if test="enable != null">`enable` = #{enable}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="lastPasswordResetDate != null">`last_password_reset_date` = #{lastPasswordResetDate}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_user where user_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_user where user_id in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+</mapper>

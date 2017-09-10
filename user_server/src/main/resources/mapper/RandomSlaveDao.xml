@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.RandomSlaveDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.RandomSlaveEntity" id="randomSlaveMap">
+        <result property="slaveAccount" column="slave_account"/>
+        <result property="masterId" column="master_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.RandomSlaveEntity">
+		select * from random_slave where slave_account = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.RandomSlaveEntity">
+		select * from random_slave
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${order} ${sidx}
+            </when>
+			<otherwise>
+                order by slave_account desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from random_slave 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.RandomSlaveEntity" useGeneratedKeys="true" keyProperty="slaveAccount">
+		insert into random_slave
+		<set>
+			<if test="masterId != null">`master_id` = #{masterId}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.RandomSlaveEntity">
+		update random_slave 
+		<set>
+			<if test="masterId != null">`master_id` = #{masterId}</if>
+		</set>
+		where slave_account = #{slaveAccount}
+	</update>
+	
+	<delete id="delete">
+		delete from random_slave where slave_account = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from random_slave where slave_account in 
+		<foreach item="slaveAccount" collection="array" open="(" separator="," close=")">
+			#{slaveAccount}
+		</foreach>
+	</delete>
+
+</mapper>

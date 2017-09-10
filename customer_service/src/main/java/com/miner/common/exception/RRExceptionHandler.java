@@ -1,15 +1,24 @@
 package com.miner.common.exception;
 
+import com.miner.common.filters_inceptors.JWTAuthenticationFilter;
 import com.miner.common.utils.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +29,7 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年10月27日 下午10:16:19
  */
-@RestControllerAdvice
+@RestControllerAdvice()
 public class RRExceptionHandler {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -32,7 +41,6 @@ public class RRExceptionHandler {
 		R r = new R();
 		r.put("code", e.getCode());
 		r.put("msg", e.getMessage());
-
 		return r;
 	}
 
@@ -46,12 +54,26 @@ public class RRExceptionHandler {
         logger.error(e.getMessage(), e);
         return R.error(401,"没有权限，请联系管理员授权");
     }
-
-	@ExceptionHandler(Exception.class)
-	public R handleException(Exception e){
-		logger.error(e.getMessage(), e);
-		return R.error();
-	}
+    @ExceptionHandler(DisabledException.class)
+    public R handleDisableException(DisabledException e){
+        logger.error(e.getMessage(), e);
+        return R.error(408,"账号已锁定，请联系管理员");
+    }
+    @ExceptionHandler(AuthenticationException.class)
+	public R handleAuthenticationException(AuthenticationException e){
+        logger.error(e.getMessage(), e);
+        return R.error(401,"没有权限，请联系管理员授权");
+    }
+	@ExceptionHandler(UsernameNotFoundException.class)
+    public R HandleUserNameNotFoundException(UsernameNotFoundException e){
+        logger.error(e.getMessage(), e);
+        return R.error();
+    }
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public R handNoHandlerFoundException(NoHandlerFoundException e){
+        logger.error(e.getMessage(), e);
+        return R.error("不要瞎猜我们的接口！");
+    }
 	@ExceptionHandler(MethodArgumentNotValidException.class)
     public R handleValidateException(MethodArgumentNotValidException e){
         logger.error(e.getMessage(), e);
@@ -65,7 +87,6 @@ public class RRExceptionHandler {
             invalidArgument.setRejectedValue(error.getRejectedValue());
             invalidArguments.add(invalidArgument);
         }
-
         return R.error(40001,"参数不正确").put("arg_errors",invalidArguments);
     }
 }

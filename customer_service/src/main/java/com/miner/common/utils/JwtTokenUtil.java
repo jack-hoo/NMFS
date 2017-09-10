@@ -3,8 +3,7 @@
  */
 package com.miner.common.utils;
 
-import com.miner.common.exception.MinerException;
-import com.miner.entity.CustomerPrincipalEntity;
+import com.miner.dto.UserDetailsModel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,13 +34,13 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String token){
         String username;
         try {
             final Claims claims = getClaimsFromToken(token);
             username = claims.getSubject();
         } catch (Exception e) {
-            throw new MinerException("token非法！",50008);
+            username = null;
         }
         return username;
     }
@@ -52,7 +51,7 @@ public class JwtTokenUtil implements Serializable {
             final Claims claims = getClaimsFromToken(token);
             created = new Date((Long) claims.get(CLAIM_KEY_CREATED));
         } catch (Exception e) {
-            throw new MinerException("token非法！",50008);
+            created = null;
         }
         return created;
     }
@@ -64,7 +63,6 @@ public class JwtTokenUtil implements Serializable {
             expiration = claims.getExpiration();
         } catch (Exception e) {
             expiration = null;
-            throw new MinerException("token非法！",50008);
         }
         return expiration;
     }
@@ -78,7 +76,6 @@ public class JwtTokenUtil implements Serializable {
                     .getBody();
         } catch (Exception e) {
             claims = null;
-            throw new MinerException("token非法！",50008);
         }
         return claims;
     }
@@ -96,7 +93,7 @@ public class JwtTokenUtil implements Serializable {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public String generateToken(CustomerPrincipalEntity userDetails) {
+    public String generateToken(UserDetailsModel userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_CREATED, new Date());
@@ -124,19 +121,17 @@ public class JwtTokenUtil implements Serializable {
             claims.put(CLAIM_KEY_CREATED, new Date());
             refreshedToken = generateToken(claims);
         } catch (Exception e) {
-            throw new MinerException("token非法！",50008);
+            refreshedToken = null;
+            //throw new MinerException("token非法！",50008);
         }
         return refreshedToken;
     }
 
-    public Boolean validateToken(String token, CustomerPrincipalEntity user) {
+    public Boolean validateToken(String token, UserDetailsModel user){
        // JwtUser user = (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
-        if (isTokenExpired(token)){
-            throw new MinerException("token失效",50014);
-        }
         return (
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)

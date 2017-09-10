@@ -4,7 +4,7 @@
 package com.miner.common.filters_inceptors;
 
 import com.miner.common.utils.JwtTokenUtil;
-import com.miner.entity.CustomerPrincipalEntity;
+import com.miner.dto.UserDetailsModel;
 import com.miner.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,27 +43,26 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private String tokenHead;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain chain){
         Enumeration<String> headers = request.getHeaderNames();
 
         String authHeader = request.getHeader(tokenHeader);
-        System.out.println("认证头信息authHeader=" + authHeader);
+        //System.out.println("认证头信息authHeader=" + authHeader);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             //System.out.println("authHeader开头？");
             final String authToken = authHeader.substring(tokenHead.length());
-            String username = jwtTokenUtil.getUsernameFromToken(authToken);
-            System.out.println("用户名=" + username);
-            //logger.info("checking authentication " + username);
+            String username = null;
+            username = jwtTokenUtil.getUsernameFromToken(authToken);
+
+            //System.out.println("用户名=" + username);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 // 如果我们足够相信token中的数据，也就是我们足够相信签名token的secret的机制足够好
                 // 这种情况下，我们可以不用再查询数据库，而直接采用token中的数据
                 // 本例中，我们还是通过Spring Security的 @UserDetailsService 进行了数据查询
                 // 但简单验证的话，你可以采用直接验证token是否合法来避免昂贵的数据查询
-                CustomerPrincipalEntity userDetails = this.userDetailsService.loadUserByUsername(username);
+                UserDetailsModel userDetails = this.userDetailsService.loadUserByUsername(username);
                 if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
@@ -74,8 +73,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
+        try {
+            chain.doFilter(request,response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
 
-        chain.doFilter(request, response);
     }
 
 }

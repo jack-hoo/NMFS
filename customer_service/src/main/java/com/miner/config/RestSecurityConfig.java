@@ -30,8 +30,8 @@ public class RestSecurityConfig extends WebSecurityConfigurerAdapter{
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
                 // 设置UserDetailsService
                 .userDetailsService(this.userDetailsService)
@@ -60,7 +60,7 @@ public class RestSecurityConfig extends WebSecurityConfigurerAdapter{
 
             .authorizeRequests()
             // 对于获取token的rest api要允许匿名访问
-            .antMatchers("/auth/**").permitAll()
+            .antMatchers("/**").permitAll()
             //.antMatchers("/sysuserprincipal/**").hasRole("BOOS")
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             // 除上面外的所有请求全部需要鉴权认证

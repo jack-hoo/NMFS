@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.miner.dao.SysPermissionRoleDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.miner.entity.SysPermissionRoleEntity" id="sysPermissionRoleMap">
+        <result property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="permId" column="perm_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.miner.entity.SysPermissionRoleEntity">
+		select * from sys_permission_role where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.miner.entity.SysPermissionRoleEntity">
+		select * from sys_permission_role
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${order} ${sidx}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_permission_role 
+	</select>
+	 
+	<insert id="save" parameterType="com.miner.entity.SysPermissionRoleEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_permission_role
+		<set>
+			<if test="roleId != null">`role_id` = #{roleId}, </if>
+			<if test="permId != null">`perm_id` = #{permId}</if>
+		</set>
+	</insert>
+	 
+	<update id="update" parameterType="com.miner.entity.SysPermissionRoleEntity">
+		update sys_permission_role 
+		<set>
+			<if test="roleId != null">`role_id` = #{roleId}, </if>
+			<if test="permId != null">`perm_id` = #{permId}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_permission_role where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_permission_role where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

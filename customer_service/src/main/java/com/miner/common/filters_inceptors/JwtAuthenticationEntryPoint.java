@@ -3,6 +3,8 @@
  */
 package com.miner.common.filters_inceptors;
 
+import com.google.gson.Gson;
+import com.miner.common.exception.MinerException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -10,7 +12,10 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>Title:JwtAuthenticationEntryPoint</p>
@@ -27,10 +32,20 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
 	@Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+                         AuthenticationException exception) throws IOException {
         // This is invoked when user tries to access a secured REST resource without supplying any credentials
         // We should just send a 401 Unauthorized response because there is no 'login page' to redirect to
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        response.setContentType("application/json; charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(200);
+        Gson json = new Gson();
+        Map<Object,Object> res = new HashMap<>();
+        res.put("code",401);
+        res.put("msg","token无效");
+        String userJson = json.toJson(res);
+        OutputStream out = response.getOutputStream();
+        out.write(userJson.getBytes("UTF-8"));
+        out.flush();
     }
 
 }
